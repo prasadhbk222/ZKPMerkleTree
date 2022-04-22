@@ -23,4 +23,23 @@ public class MerkleNode {
         byte[] byteHash = mDigest.digest(concat.getBytes(StandardCharsets.UTF_8));
         return new String(byteHash, StandardCharsets.UTF_8);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        // TODO Auto-generated method stub
+        MerkleNode second =  (MerkleNode)obj;
+        return this.hash == second.hash;
+    }
+
+    @Override
+    public int hashCode() {
+        // TODO Auto-generated method stub
+        return this.hash.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return this.hash;
+    }
 }

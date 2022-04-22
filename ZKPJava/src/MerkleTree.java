@@ -58,11 +58,49 @@ public class MerkleTree {
 
     public static void main(String[] args) throws NoSuchAlgorithmException {
         //get string values and convert to list of hashes
-        List<String> values = new ArrayList<>(Arrays.asList("1","2","3"));
+        List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5", "6", "7"));
         List<String> hashes = getHashList(values);
 
         //create merkle tree using list of hashes
         MerkleTree tree = new MerkleTree();
         tree.constructMerkleTree(hashes);
+        tree.findPathInformation(new MerkleNode("7"));
+
+    }
+
+    public List<List<MerkleNode>> findPathInformation(MerkleNode destination){
+        List<List<MerkleNode>> output = new ArrayList<>();
+        List<MerkleNode> path = new ArrayList<>();
+        List<MerkleNode> pathNeighbors = new ArrayList<>();
+        findPath(root, destination, path, pathNeighbors);
+        // System.out.println(path);
+        // System.out.println(pathNeighbors);
+        output.add(path);
+        output.add(pathNeighbors);
+        return output;
+    }
+
+    public boolean findPath(MerkleNode node, MerkleNode destination, List<MerkleNode> path, List<MerkleNode> pathNeighbors){
+        if (node == null)
+            return false;
+
+        if (node.equals(destination)){
+            return true;
+        }
+
+        if (findPath(node.left, destination, path, pathNeighbors)){
+            path.add(node);
+            if (node.right != null)
+                pathNeighbors.add(node.right);
+            return true;
+        }
+        else if (findPath(node.right, destination, path, pathNeighbors)) {
+            path.add(node);
+            if (node.left != null)
+                pathNeighbors.add(node.left);
+            return true;
+        }
+
+        return false;
     }
 }
