@@ -20,17 +20,15 @@ public class ProofOfInclusion {
         bits = new ArrayList<>();
         List<List<MerkleNode>> pathInfo = tree.findPathInformation(destination);
         List<MerkleNode> path = pathInfo.get(0);
-        // System.out.println("Root = "+tree.root);
-        // System.out.println("Destination = "+destination);
+        
         traverseTree(tree.root, destination, path);
 
-        System.out.println("List of Hashes "+hashes.size());
-        for(String hash : hashes){
-            System.out.println("\n"+hash);
-        }
+        // System.out.println("List of Hashes "+hashes.size());
+        // for(String hash : hashes){
+        //     System.out.println("\n"+hash);
+        // }
 
-        //System.out.println(hashes);
-        System.out.println(bits);
+        // System.out.println(bits);
     }
 
     public void traverseTree(MerkleNode node, MerkleNode destination, List<MerkleNode> path){
@@ -38,7 +36,6 @@ public class ProofOfInclusion {
             return;
         }
         if(node.equals(destination)){
-            // System.out.println("Found Destination "+node.hash);
             bits.add(1);
             hashes.add(node.hash);
             return;
@@ -48,7 +45,6 @@ public class ProofOfInclusion {
             traverseTree(node.right, destination, path);
             return;
         }else{
-            // System.out.println("Not Inside Path "+ node.hash);
             bits.add(0);
             hashes.add(node.hash);
             return;

@@ -64,8 +64,7 @@ public class MerkleTree {
         List<MerkleNode> path = new ArrayList<>();
         List<MerkleNode> pathNeighbors = new ArrayList<>();
         findPath(root, destination, path, pathNeighbors);
-        // System.out.println("Path: "+ path);
-        // System.out.println(pathNeighbors);
+        
         output.add(path);
         output.add(pathNeighbors);
         return output;
@@ -105,16 +104,40 @@ public class MerkleTree {
         if(node==null){
             return;
         }
-        System.out.println("\n"+node.hash);
         printTree(node.left);
         printTree(node.right);
     }
 
-    public static boolean validateProof(ProofOfInclusion poi){
-        List<String> hashList = new ArrayList<>(poi.hashes);
-        int leafDepth = (int) Math.ceil(log2(poi.numNodes));
-        System.out.println("Leaf depth "+leafDepth);
-        return false;
+    public boolean validateProof(ProofOfInclusion poi) throws NoSuchAlgorithmException{
+        //-1 as we start from 0
+        int leafDepth = (int) Math.ceil(log2(poi.numNodes)) - 1;
+        return root.equals(construct(leafDepth, 0, poi));
+    }
+
+    public MerkleNode construct(int leafDepth, int depth, ProofOfInclusion poi) throws NoSuchAlgorithmException{
+        // List<String> hashList = new ArrayList<>(poi.hashes);
+
+        //least significant bit
+        int lsb = poi.bits.remove(0);
+        
+        MerkleNode node = new MerkleNode();
+
+        if(depth == leafDepth){
+            String hashStr = poi.hashes.remove(0);
+            if(hashStr!=null){
+               node.hash = hashStr;     
+            }           
+        }else if(lsb == 1){
+            node.left = construct(leafDepth, depth+1, poi);
+            node.right = construct(leafDepth, depth+1, poi);
+            node.hash = node.computeHash();
+        } else{
+            String hashStr = poi.hashes.remove(0);
+            if(hashStr!=null){
+                node.hash = hashStr;     
+            }  
+        }
+        return node;
     }
 
     public static double log2(int N)
@@ -127,21 +150,20 @@ public class MerkleTree {
     
     public static void main(String[] args) throws NoSuchAlgorithmException {
         //get string values and convert to list of hashes
-        List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5", "6", "7"));
+        List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5"));
         List<String> hashes = getHashList(values);
         
         //create merkle tree using list of hashes
         MerkleTree tree = new MerkleTree();
         tree.constructMerkleTree(hashes);
-        // tree.printTree(tree.root);
-        String hashDest = computeHashValue("5");
-        // System.out.println(hashDest);
-        // tree.findPathInformation(new MerkleNode(hashDest));
+
+        //compute hash of destination
+        String hashDest = computeHashValue("4");
+       
 
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));
-        System.out.println(tree.numNodes);
-        tree.validateProof(poi);
+        System.out.println("Validated "+tree.validateProof(poi));
     }
 }
