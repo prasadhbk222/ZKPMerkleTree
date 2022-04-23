@@ -111,17 +111,28 @@ public class MerkleTree {
     public boolean validateProof(ProofOfInclusion poi) throws NoSuchAlgorithmException{
         //-1 as we start from 0
         int leafDepth = (int) Math.ceil(log2(poi.numNodes)) - 1;
-        return root.equals(construct(leafDepth, 0, poi));
+        //first bit must be 1
+        if(poi.bits.get(0)==0) return false;
+        try{
+            MerkleNode proof = construct(leafDepth, 0, poi);
+            if(poi.bits.size()>0 || poi.hashes.size()>0){
+                return false;
+            }
+            System.out.println("\nProof root "+proof.hash);
+            return root.equals(proof);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return false;
+        }       
     }
 
     public MerkleNode construct(int leafDepth, int depth, ProofOfInclusion poi) throws NoSuchAlgorithmException{
-        // List<String> hashList = new ArrayList<>(poi.hashes);
-
         //least significant bit
-        int lsb = poi.bits.remove(0);
-        
+        if(poi.bits.size()==0){
+            return null;
+        }
+        int lsb = poi.bits.remove(0);        
         MerkleNode node = new MerkleNode();
-
         if(depth == leafDepth){
             String hashStr = poi.hashes.remove(0);
             if(hashStr!=null){
@@ -150,20 +161,20 @@ public class MerkleTree {
     
     public static void main(String[] args) throws NoSuchAlgorithmException {
         //get string values and convert to list of hashes
-        List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5"));
+        List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5","6"));
         List<String> hashes = getHashList(values);
         
         //create merkle tree using list of hashes
         MerkleTree tree = new MerkleTree();
         tree.constructMerkleTree(hashes);
+        System.out.println("Root of merkle tree = "+ tree.root);
 
         //compute hash of destination
-        String hashDest = computeHashValue("4");
-       
-
+        String hashDest = computeHashValue("700");
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));
+       
         System.out.println("Validated "+tree.validateProof(poi));
     }
 }
