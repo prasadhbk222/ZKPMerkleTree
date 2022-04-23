@@ -3,6 +3,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -106,7 +107,7 @@ public class MerkleTree {
         //-1 as we start from 0
         int leafDepth = (int) Math.ceil(log2(poi.numNodes)) - 1;
         //first bit must be 1
-        if(poi.hashes.size()==0 || poi.bits.size()==0 || poi.bits.get(0)==0) return false;
+        if(poi.hashes.size()==0 || poi.bits.size()==0 || poi.bits.peekFirst()==0) return false;
         try{
             MerkleNode proof = construct(leafDepth, 0, poi, algo);
             if(poi.bits.size()>0 || poi.hashes.size()>0){
@@ -125,7 +126,7 @@ public class MerkleTree {
         if(poi.bits.size()==0){
             return null;
         }
-        int lsb = poi.bits.remove(0);        
+        int lsb = poi.bits.removeFirst();        
         MerkleNode node = new MerkleNode();
         if(depth == leafDepth){
             String hashStr = poi.hashes.remove(0);
@@ -165,7 +166,7 @@ public class MerkleTree {
         System.out.println("Root of merkle tree = "+ tree.root);
 
         //compute hash of destination
-        String hashDest = computeHashValue("9", algo);
+        String hashDest = computeHashValue("5", algo);
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));
