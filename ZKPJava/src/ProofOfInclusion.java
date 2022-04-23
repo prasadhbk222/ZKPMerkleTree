@@ -6,10 +6,11 @@ public class ProofOfInclusion {
     MerkleTree tree;
     List<String> hashes;
     List<Integer> bits;
-    // int numNodes;
+    int numNodes;
 
     public ProofOfInclusion(MerkleTree tree){
         this.tree = tree;
+        this.numNodes = tree.numNodes;
         hashes = new ArrayList<>();
         bits = new ArrayList<>();
     }
@@ -57,5 +58,5 @@ public class ProofOfInclusion {
     public boolean isInPath(List<MerkleNode> path, MerkleNode node){
         return path.contains(node);
     }
-
+  
 }

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public class MerkleTree {
     public MerkleNode root;
+    public int numNodes = 0;
 
     public void constructMerkleTree(List<String> hashes) throws NoSuchAlgorithmException {
         //Create leaf nodes using hashes
@@ -15,7 +16,7 @@ public class MerkleTree {
                 .stream()
                 .map(p-> new MerkleNode(p))
                 .collect(Collectors.toList());
-
+        numNodes = hashes.size();
         while(nodes.size()>1){
             List<MerkleNode> parents = new ArrayList<>();
 
@@ -32,6 +33,7 @@ public class MerkleTree {
             }
 
             nodes = parents;
+            numNodes += parents.size();
         }
 
         root = nodes.get(0);
@@ -107,12 +109,27 @@ public class MerkleTree {
         printTree(node.left);
         printTree(node.right);
     }
+
+    public static boolean validateProof(ProofOfInclusion poi){
+        List<String> hashList = new ArrayList<>(poi.hashes);
+        int leafDepth = (int) Math.ceil(log2(poi.numNodes));
+        System.out.println("Leaf depth "+leafDepth);
+        return false;
+    }
+
+    public static double log2(int N)
+    { 
+        // calculate log2 N indirectly
+        // using log() method
+        return (Math.log(N) / Math.log(2)); 
+    }
+ 
     
     public static void main(String[] args) throws NoSuchAlgorithmException {
         //get string values and convert to list of hashes
-        List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5"));
+        List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5", "6", "7"));
         List<String> hashes = getHashList(values);
-
+        
         //create merkle tree using list of hashes
         MerkleTree tree = new MerkleTree();
         tree.constructMerkleTree(hashes);
@@ -124,6 +141,7 @@ public class MerkleTree {
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));
-
+        System.out.println(tree.numNodes);
+        tree.validateProof(poi);
     }
 }
