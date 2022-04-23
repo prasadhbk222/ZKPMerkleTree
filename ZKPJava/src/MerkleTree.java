@@ -10,7 +10,7 @@ public class MerkleTree {
     public MerkleNode root;
     public int numNodes = 0;
 
-    public void constructMerkleTree(List<String> hashes) throws NoSuchAlgorithmException {
+    public void constructMerkleTree(List<String> hashes, String algo) throws NoSuchAlgorithmException {
         //Create leaf nodes using hashes
         List<MerkleNode> nodes = hashes
                 .stream()
@@ -29,7 +29,7 @@ public class MerkleTree {
                 if((i+1)<nodes.size()){
                     parent.right = nodes.get(i+1);
                 }
-                parent.hash = parent.computeHash();
+                parent.hash = parent.computeHash(algo);
             }
 
             nodes = parents;
@@ -41,13 +41,13 @@ public class MerkleTree {
 
 
 
-    public static List<String> getHashList(List<String> values) {
+    public static List<String> getHashList(List<String> values, String algo) {
         List<String> hashList = values
                 .stream()
                 .map(p-> {
                     MessageDigest mDigest = null;
                     try {
-                        mDigest = MessageDigest.getInstance("SHA-256");
+                        mDigest = MessageDigest.getInstance(algo);
                     } catch (NoSuchAlgorithmException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -70,8 +70,8 @@ public class MerkleTree {
         return output;
     }
 
-    public static String computeHashValue(String str) throws NoSuchAlgorithmException{
-        MessageDigest mDigest = MessageDigest.getInstance("SHA-256");
+    public static String computeHashValue(String str, String algo) throws NoSuchAlgorithmException{
+        MessageDigest mDigest = MessageDigest.getInstance(algo);
         byte[] byteHash = mDigest.digest(str.getBytes(StandardCharsets.UTF_8));
         return new String(byteHash, StandardCharsets.UTF_8);
     }
@@ -108,13 +108,13 @@ public class MerkleTree {
         printTree(node.right);
     }
 
-    public boolean validateProof(ProofOfInclusion poi) throws NoSuchAlgorithmException{
+    public boolean validateProof(ProofOfInclusion poi, String algo) throws NoSuchAlgorithmException{
         //-1 as we start from 0
         int leafDepth = (int) Math.ceil(log2(poi.numNodes)) - 1;
         //first bit must be 1
         if(poi.hashes.size()==0 || poi.bits.size()==0 || poi.bits.get(0)==0) return false;
         try{
-            MerkleNode proof = construct(leafDepth, 0, poi);
+            MerkleNode proof = construct(leafDepth, 0, poi, algo);
             if(poi.bits.size()>0 || poi.hashes.size()>0){
                 return false;
             }
@@ -126,7 +126,7 @@ public class MerkleTree {
         }       
     }
 
-    public MerkleNode construct(int leafDepth, int depth, ProofOfInclusion poi) throws NoSuchAlgorithmException{
+    public MerkleNode construct(int leafDepth, int depth, ProofOfInclusion poi, String algo) throws NoSuchAlgorithmException{
         //least significant bit
         if(poi.bits.size()==0){
             return null;
@@ -139,9 +139,9 @@ public class MerkleTree {
                node.hash = hashStr;     
             }           
         }else if(lsb == 1){
-            node.left = construct(leafDepth, depth+1, poi);
-            node.right = construct(leafDepth, depth+1, poi);
-            node.hash = node.computeHash();
+            node.left = construct(leafDepth, depth+1, poi, algo);
+            node.right = construct(leafDepth, depth+1, poi, algo);
+            node.hash = node.computeHash(algo);
         } else{
             String hashStr = poi.hashes.remove(0);
             if(hashStr!=null){
@@ -160,21 +160,22 @@ public class MerkleTree {
  
     
     public static void main(String[] args) throws NoSuchAlgorithmException {
+        String algo = "SHA-256";
         //get string values and convert to list of hashes
         List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5","6"));
-        List<String> hashes = getHashList(values);
+        List<String> hashes = getHashList(values, algo);
         
         //create merkle tree using list of hashes
         MerkleTree tree = new MerkleTree();
-        tree.constructMerkleTree(hashes);
+        tree.constructMerkleTree(hashes, algo);
         System.out.println("Root of merkle tree = "+ tree.root);
 
         //compute hash of destination
-        String hashDest = computeHashValue("60");
+        String hashDest = computeHashValue("8", algo);
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));
 
-        System.out.println("Validated "+tree.validateProof(poi));
+        System.out.println("Validated "+tree.validateProof(poi, algo));
     }
 }

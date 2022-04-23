@@ -15,11 +15,11 @@ public class MerkleNode {
 
     }
 
-    public String computeHash() throws NoSuchAlgorithmException {
+    public String computeHash(String algo) throws NoSuchAlgorithmException {
         String leftHash = this.left.hash;
         String rightHash = this.right!=null ? this.right.hash : leftHash ;
         String concat = leftHash+rightHash;
-        MessageDigest mDigest = MessageDigest.getInstance("SHA-256");
+        MessageDigest mDigest = MessageDigest.getInstance(algo);
         byte[] byteHash = mDigest.digest(concat.getBytes(StandardCharsets.UTF_8));
         return new String(byteHash, StandardCharsets.UTF_8);
     }
