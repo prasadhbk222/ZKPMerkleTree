@@ -28,7 +28,7 @@ public class MerkleNode {
     public boolean equals(Object obj) {
         // TODO Auto-generated method stub
         MerkleNode second =  (MerkleNode)obj;
-        return this.hash == second.hash;
+        return this.hash.equals(second.hash);
     }
 
     @Override
