@@ -112,7 +112,7 @@ public class MerkleTree {
         //-1 as we start from 0
         int leafDepth = (int) Math.ceil(log2(poi.numNodes)) - 1;
         //first bit must be 1
-        if(poi.bits.get(0)==0) return false;
+        if(poi.hashes.size()==0 || poi.bits.size()==0 || poi.bits.get(0)==0) return false;
         try{
             MerkleNode proof = construct(leafDepth, 0, poi);
             if(poi.bits.size()>0 || poi.hashes.size()>0){
@@ -170,11 +170,11 @@ public class MerkleTree {
         System.out.println("Root of merkle tree = "+ tree.root);
 
         //compute hash of destination
-        String hashDest = computeHashValue("700");
+        String hashDest = computeHashValue("60");
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));
-       
+
         System.out.println("Validated "+tree.validateProof(poi));
     }
 }
