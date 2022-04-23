@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class ProofOfInclusion {
@@ -18,8 +19,7 @@ public class ProofOfInclusion {
     public void generateProofOfInclusion(MerkleNode destination){
         hashes = new ArrayList<>();
         bits = new ArrayList<>();
-        List<List<MerkleNode>> pathInfo = tree.findPathInformation(destination);
-        List<MerkleNode> path = pathInfo.get(0);
+        Set<MerkleNode> path = tree.findPathInformation(destination);
         
         traverseTree(tree.root, destination, path);
 
@@ -31,7 +31,7 @@ public class ProofOfInclusion {
         System.out.println("\nbits = "+bits);
     }
 
-    public void traverseTree(MerkleNode node, MerkleNode destination, List<MerkleNode> path){
+    public void traverseTree(MerkleNode node, MerkleNode destination, Set<MerkleNode> path){
         if(node == null){
             return;
         }
@@ -51,7 +51,7 @@ public class ProofOfInclusion {
         }
     }
 
-    public boolean isInPath(List<MerkleNode> path, MerkleNode node){
+    public boolean isInPath(Set<MerkleNode> path, MerkleNode node){
         return path.contains(node);
     }
   

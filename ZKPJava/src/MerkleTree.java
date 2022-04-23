@@ -3,7 +3,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MerkleTree {
@@ -59,15 +61,11 @@ public class MerkleTree {
         return hashList;
     }
 
-    public List<List<MerkleNode>> findPathInformation(MerkleNode destination){
-        List<List<MerkleNode>> output = new ArrayList<>();
-        List<MerkleNode> path = new ArrayList<>();
-        List<MerkleNode> pathNeighbors = new ArrayList<>();
-        findPath(root, destination, path, pathNeighbors);
+    public Set<MerkleNode> findPathInformation(MerkleNode destination){
+        Set<MerkleNode> path = new HashSet<>();
+        findPath(root, destination, path);
         
-        output.add(path);
-        output.add(pathNeighbors);
-        return output;
+        return path;
     }
 
     public static String computeHashValue(String str, String algo) throws NoSuchAlgorithmException{
@@ -76,7 +74,7 @@ public class MerkleTree {
         return new String(byteHash, StandardCharsets.UTF_8);
     }
 
-    public boolean findPath(MerkleNode node, MerkleNode destination, List<MerkleNode> path, List<MerkleNode> pathNeighbors){
+    public boolean findPath(MerkleNode node, MerkleNode destination, Set<MerkleNode> path){
         if (node == null)
             return false;
 
@@ -84,16 +82,12 @@ public class MerkleTree {
             return true;
         }
 
-        if (findPath(node.left, destination, path, pathNeighbors)){
+        if (findPath(node.left, destination, path)){
             path.add(node);
-            if (node.right != null)
-                pathNeighbors.add(node.right);
             return true;
         }
-        else if (findPath(node.right, destination, path, pathNeighbors)) {
+        else if (findPath(node.right, destination, path)) {
             path.add(node);
-            if (node.left != null)
-                pathNeighbors.add(node.left);
             return true;
         }
 
@@ -171,7 +165,7 @@ public class MerkleTree {
         System.out.println("Root of merkle tree = "+ tree.root);
 
         //compute hash of destination
-        String hashDest = computeHashValue("8", algo);
+        String hashDest = computeHashValue("9", algo);
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));
