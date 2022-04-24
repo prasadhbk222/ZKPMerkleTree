@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -6,19 +8,19 @@ import java.util.Set;
 public class ProofOfInclusion {
     MerkleTree tree;
     List<String> hashes;
-    List<Integer> bits;
+    Deque<Integer> bits;
     int numNodes;
 
     public ProofOfInclusion(MerkleTree tree){
         this.tree = tree;
         this.numNodes = tree.numNodes;
         hashes = new ArrayList<>();
-        bits = new ArrayList<>();
+        bits = new LinkedList<>();
     }
 
     public void generateProofOfInclusion(MerkleNode destination){
         hashes = new ArrayList<>();
-        bits = new ArrayList<>();
+        bits = new LinkedList<>();
         Set<MerkleNode> path = tree.findPathInformation(destination);
         
         traverseTree(tree.root, destination, path);
