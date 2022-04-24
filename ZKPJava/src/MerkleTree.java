@@ -112,7 +112,7 @@ public class MerkleTree {
             if(poi.bits.size()>0 || poi.hashes.size()>0){
                 return false;
             }
-            System.out.println("\nProof root "+proof.hash);
+            // System.out.println("\nProof root "+proof.hash);
             return root.equals(proof);
         }catch(Exception ex){
             ex.printStackTrace();
@@ -154,7 +154,7 @@ public class MerkleTree {
  
     
     public static void main(String[] args) throws NoSuchAlgorithmException {
-        String algo = "SHA-256";
+        String algo = "SHA-512";
         //get string values and convert to list of hashes
         List<String> values = new ArrayList<>(Arrays.asList("1","2","3", "4", "5","6"));
         List<String> hashes = getHashList(values, algo);
@@ -165,7 +165,7 @@ public class MerkleTree {
         System.out.println("Root of merkle tree = "+ tree.root);
 
         //compute hash of destination
-        String hashDest = computeHashValue("9", algo);
+        String hashDest = computeHashValue("5", algo);
         //generate POI
         ProofOfInclusion poi = new ProofOfInclusion(tree);
         poi.generateProofOfInclusion(new MerkleNode(hashDest));

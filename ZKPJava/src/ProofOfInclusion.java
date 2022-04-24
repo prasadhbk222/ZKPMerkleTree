@@ -24,11 +24,11 @@ public class ProofOfInclusion {
         traverseTree(tree.root, destination, path);
 
         //after generation of proof
-        System.out.println("List of Hashes "+hashes.size());
-        for(String hash : hashes){
-            System.out.println("\n"+hash);
-        }
-        System.out.println("\nbits = "+bits);
+        // System.out.println("List of Hashes "+hashes.size());
+        // for(String hash : hashes){
+        //     System.out.println("\n"+hash);
+        // }
+        // System.out.println("\nbits = "+bits);
     }
 
     public void traverseTree(MerkleNode node, MerkleNode destination, Set<MerkleNode> path){
